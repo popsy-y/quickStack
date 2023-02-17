@@ -1,4 +1,4 @@
-console.log("QuickStack v1.0 loaded!");
+console.log("QuickStack v0.9 loaded!");
 
 // --------------------
 //        GRID
@@ -170,9 +170,12 @@ async function qs_paletteGenerate(clrs){
     switch (argumentTypeChecker(clrs)) {
         case "str":
             console.log(clrs);
-            let strTmp = [color(clrs)];
-            let strTmp1 = [[red(strTmp), blue(strTmp), green(strTmp)],];
-            reqBody = reqBodyComposer(strTmp1);
+            // あとはカラーパレット生成機能で完成！
+            let strTmpAry = [];
+            let strTmp = color(clrs);
+            strTmpAry.push([red(strTmp), green(strTmp), blue(strTmp)]);
+            console.log(strTmpAry);
+            reqBody = reqBodyComposer(strTmpAry);
             break;
 
         case "plt":
@@ -185,8 +188,9 @@ async function qs_paletteGenerate(clrs){
             break;
 
         case "rgb":
-            let tmp = [clrs[0], clrs[1], clrs[2],];
-            reqBody = reqBodyComposer(tmp);
+            let rgbTmpAry = [];
+            rgbTmpAry.push([clrs[0], clrs[1], clrs[2],]);
+            reqBody = reqBodyComposer(rgbTmpAry);
             break;
 
         default:
@@ -194,9 +198,13 @@ async function qs_paletteGenerate(clrs){
             break;
     }
 
-    const newPalette = paletteRequest(reqBody);
+    console.log([reqBody]);
 
-    qs_addPalette(newPalette);
+    // const newPalette = paletteRequest([reqBody]);
+
+    paletteRequest(reqBody);
+
+    // qs_addPalette(newPalette);
     return true;
 }
 
@@ -221,50 +229,84 @@ function reqBodyComposer(ary){
       }
       
       let result = ary.concat(blackets);
-    // let result = [];
-    // result.push(ary);
-    // for (let i = 0; i < 5-ary.length; i++) {
-    //     result.push("N");
-    // }
+      console.log(result);
 
     return result;
 }
 
-async function paletteRequest(clrs){
-    // add return keyword here
-    return fetch('http://colormind.io/api/', {
-        method: 'POST',
-        body: JSON.stringify({"model":"default"})
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-        return data;
-    })
-    .catch(error => {
-        console.log('error at color palette request to colormind API.\n'+error);
-    });
-}
-
-// async function qs_paletteGenerate(clrs){
-//     if (clrs === undefined) {
-//         const palette = await paletteRequest();
-//         console.log(palette);
-//         qs_addPalette(palette);
-//     }
-// }
-
-// async function paletteRequest(){
-//     fetch('http://colormind.io/api/', {
+// async function paletteRequest(clrs){
+//     let resClone = "";
+//     // add return keyword here
+//     return fetch('http://colormind.io/api/', {
 //         method: 'POST',
-//         body: JSON.stringify({"model":"default"})
+//         body: JSON.stringify({"input":clrs,"model":"default"})
 //     })
-//     .then(response => response.json())
+//     .then(function (response){
+//         resClone = response;
+//         // return JSON.parse(response);
+//         return response.json();
+//         // ここでコケる　<html><h1>internal server error</h1>みたいなのがresponseに入ってるっぽい　なんで？
+//         // 下の公式ページから持ってきたサンプルだとうまくいく　色が若干変わるのは仕様っぽい
+//         // console.log(response.json());
+//     })
+//     // .then(response => response.json())
 //     .then(data => {
-//         console.log(data);
+//         console.log(JSON.stringify(data));
 //         return data;
 //     })
 //     .catch(error => {
-//         console.log('error at color palette request to colormind API.\n'+error);
+//         console.error('error at color palette request to colormind API.\n'+error);
+//         console.log(resClone);
 //     });
 // }
+
+// async function paletteRequest(clrs){
+//     let palette;
+//     var url = "http://colormind.io/api/";
+//     var data = {
+//         model : "default",
+//         input : clrs
+//     }
+
+//     var http = new XMLHttpRequest();
+
+//     http.onreadystatechange = function() {
+//         if(http.readyState == 4 && http.status == 200) {
+//             console.log("before parse");
+//             console.log(http.responseText);
+//             palette = JSON.parse(http.responseText).result;
+//             console.log("after parse");
+//             qs_addPalette(palette);
+//             console.log(palette);
+
+//             return true;
+//         }
+//     }
+
+//     http.open("POST", url, true);
+//     await http.send(JSON.stringify(data));
+
+//     return palette;
+// }
+
+function paletteRequest(clrs){
+    var url = "http://colormind.io/api/";
+    var data = {
+        model : "default",
+        input : clrs
+    };
+
+    var http = new XMLHttpRequest();
+
+    http.onreadystatechange = function() {
+        if(http.readyState == 4 && http.status == 200) {
+            var palette = JSON.parse(http.responseText).result;
+            qs_addPalette(palette);
+            qs_showPalettes();
+            console.log(palette);
+        }
+    }
+
+    http.open("POST", url, true);
+    http.send(JSON.stringify(data));
+}
