@@ -1,4 +1,4 @@
-console.log("QuickStack v0.9 loaded!");
+console.log("QuickStack v1.0 loaded!");
 
 // --------------------
 //        GRID
@@ -79,14 +79,28 @@ function qs_showPalettes(){
 }
 
 function qs_addPalette(palette){
-    let tmp = [];    
+    let tmp = qsClr;
+    let tmp1;
+
+    console.log(palette);
 
     for (let i = 0; i < palette.length; i++) {
-        tmp.push(color(palette[i]));
+        console.log("test");
+        tmp1.push(color(palette[i]));
     }
 
-    qsClr.push(tmp);
+    qsClr.length = 0;
+    qsClr = tmp.concat(tmp1);
+    console.log(qsClr);
     return true;
+    // let tmp = [];
+
+    // for (let i = 0; i < palette.length; i++) {
+    //     tmp.push(color(palette[i]));
+    // }
+
+    // qsClr.push(tmp);
+    // return true;
 }
 
 function qs_deletePalette(index){
@@ -151,7 +165,9 @@ function qs_rndPaletteColor(index){
     if (index > qsClr.length) {
         console.error("[ERROR] qs_rndPaletteColor: Invalid palette index");
     }else{
-        return qsClr[index][Math.floor(Math.random()*qsClr[index].length)];
+        console.log(qsClr);
+        return qs_pickColor(index, qs_pickPalette(index).length);
+        // return qsClr[index][Math.floor(Math.random()*qs_pickPalette(index).length)];
     }
 
     return false;
@@ -168,13 +184,14 @@ async function qs_paletteGenerate(clrs){
     let reqBody;
 
     switch (argumentTypeChecker(clrs)) {
+        case "emp":
+            let empTmp = [];
+            reqBody = reqBodyComposer(empTmp);
+            break;
         case "str":
-            console.log(clrs);
-            // あとはカラーパレット生成機能で完成！
             let strTmpAry = [];
             let strTmp = color(clrs);
             strTmpAry.push([red(strTmp), green(strTmp), blue(strTmp)]);
-            console.log(strTmpAry);
             reqBody = reqBodyComposer(strTmpAry);
             break;
 
@@ -198,18 +215,42 @@ async function qs_paletteGenerate(clrs){
             break;
     }
 
-    console.log([reqBody]);
+    // paletteRequest(reqBody);
 
-    // const newPalette = paletteRequest([reqBody]);
+    // let receivedPalette;
 
-    paletteRequest(reqBody);
+    // await paletteRequest(reqBody).then((res) => {
+    //     console.log(res);
+    //     qs_addPalette(res);
+    // });
+    // await paletteRequest(reqBody).then(palette => {
+    //     console.log(palette);
+    //     receivedPalette = palette;
+    // });
 
-    // qs_addPalette(newPalette);
+    // console.log(receivedPalette);
+
+    // let receivedPalette = await paletteRequest(reqBody);
+    // qs_addPalette(await paletteRequest(reqBody));
+
+    // let receivedPalette = paletteRequest(reqBody);
+    // setTimeout(qs_addPalette(receivedPalette), 3000);
+
+    postColors(reqBody)
+    .then(response => {
+        qs_addPalette(response);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
     return true;
 }
 
-function argumentTypeChecker(target){
-    if (typeof target == "string") {
+function argumentTypeChecker(target = "empty"){
+    if (target == "empty") {
+        return "emp";
+    }else if (typeof target == "string") {
         return "str";
     }else if (typeof target == "object") {
         if (typeof target[0] == "object") {
@@ -229,84 +270,43 @@ function reqBodyComposer(ary){
       }
       
       let result = ary.concat(blackets);
-      console.log(result);
 
     return result;
 }
 
-// async function paletteRequest(clrs){
-//     let resClone = "";
-//     // add return keyword here
-//     return fetch('http://colormind.io/api/', {
-//         method: 'POST',
-//         body: JSON.stringify({"input":clrs,"model":"default"})
-//     })
-//     .then(function (response){
-//         resClone = response;
-//         // return JSON.parse(response);
-//         return response.json();
-//         // ここでコケる　<html><h1>internal server error</h1>みたいなのがresponseに入ってるっぽい　なんで？
-//         // 下の公式ページから持ってきたサンプルだとうまくいく　色が若干変わるのは仕様っぽい
-//         // console.log(response.json());
-//     })
-//     // .then(response => response.json())
-//     .then(data => {
-//         console.log(JSON.stringify(data));
-//         return data;
-//     })
-//     .catch(error => {
-//         console.error('error at color palette request to colormind API.\n'+error);
-//         console.log(resClone);
-//     });
-// }
-
-// async function paletteRequest(clrs){
-//     let palette;
-//     var url = "http://colormind.io/api/";
-//     var data = {
-//         model : "default",
-//         input : clrs
-//     }
-
-//     var http = new XMLHttpRequest();
-
-//     http.onreadystatechange = function() {
-//         if(http.readyState == 4 && http.status == 200) {
-//             console.log("before parse");
-//             console.log(http.responseText);
-//             palette = JSON.parse(http.responseText).result;
-//             console.log("after parse");
-//             qs_addPalette(palette);
-//             console.log(palette);
-
-//             return true;
-//         }
-//     }
-
-//     http.open("POST", url, true);
-//     await http.send(JSON.stringify(data));
-
-//     return palette;
-// }
-
-function paletteRequest(clrs){
-    var url = "http://colormind.io/api/";
-    var data = {
+async function paletteRequest(clrs){
+    const url = "http://colormind.io/api/";
+    const data = {
         model : "default",
         input : clrs
     };
 
-    var http = new XMLHttpRequest();
+    const http = new XMLHttpRequest();
 
-    http.onreadystatechange = function() {
+    http.onreadystatechange = async function() {
         if(http.readyState == 4 && http.status == 200) {
-            var palette = JSON.parse(http.responseText).result;
-            qs_addPalette(palette);
-            qs_showPalettes();
+            const palette = JSON.parse(http.responseText).result;
+            // qs_addPalette(palette);
+            // qsClr.push(palette);
             console.log(palette);
+            return palette;
         }
-    }
+    };
 
     http.open("POST", url, true);
     http.send(JSON.stringify(data));
 }
+
+function postColors(clrs) {
+    return fetch('http://colormind.io/api/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: JSON.stringify({model: "default", input: clrs})
+    })
+    .then(response => response.json())
+    .then(response => {
+      return response;
+    });
+  }
