@@ -93,14 +93,6 @@ function qs_addPalette(palette){
     qsClr = tmp.concat(tmp1);
     console.log(qsClr);
     return true;
-    // let tmp = [];
-
-    // for (let i = 0; i < palette.length; i++) {
-    //     tmp.push(color(palette[i]));
-    // }
-
-    // qsClr.push(tmp);
-    // return true;
 }
 
 function qs_deletePalette(index){
@@ -162,12 +154,16 @@ function qs_pickColor(paletteIndex, colorIndex){
 }
 
 function qs_rndPaletteColor(index){
-    if (index > qsClr.length) {
-        console.error("[ERROR] qs_rndPaletteColor: Invalid palette index");
-    }else{
-        console.log(qsClr);
-        return qs_pickColor(index, qs_pickPalette(index).length);
-        // return qsClr[index][Math.floor(Math.random()*qs_pickPalette(index).length)];
+    try{
+        if (index > qsClr.length) {
+            console.error("[ERROR] qs_rndPaletteColor: Invalid palette index");
+        }else{
+            console.log(qsClr);
+            return qs_pickColor(index, qs_pickPalette(index).length);
+            // return qsClr[index][Math.floor(Math.random()*qs_pickPalette(index).length)];
+        }
+    }catch{
+        return color("#FFFFFF");
     }
 
     return false;
@@ -179,134 +175,3 @@ function qs_rndColor(){
 
     return qsClr[paletteIndex][colorIndex];
 }
-
-async function qs_paletteGenerate(clrs){
-    let reqBody;
-
-    switch (argumentTypeChecker(clrs)) {
-        case "emp":
-            let empTmp = [];
-            reqBody = reqBodyComposer(empTmp);
-            break;
-        case "str":
-            let strTmpAry = [];
-            let strTmp = color(clrs);
-            strTmpAry.push([red(strTmp), green(strTmp), blue(strTmp)]);
-            reqBody = reqBodyComposer(strTmpAry);
-            break;
-
-        case "plt":
-            if (clrs.length > 4) {
-                console.error("[ERROR] qs_paletteGenerate: Too many colors in one palette");
-            }else{
-                let tmp = clrs;
-                reqBody = reqBodyComposer(tmp);
-            }
-            break;
-
-        case "rgb":
-            let rgbTmpAry = [];
-            rgbTmpAry.push([clrs[0], clrs[1], clrs[2],]);
-            reqBody = reqBodyComposer(rgbTmpAry);
-            break;
-
-        default:
-            console.error("[ERROR] qs_paletteGenerate > argumentTypeChecker: Invalid argument type");
-            break;
-    }
-
-    // paletteRequest(reqBody);
-
-    // let receivedPalette;
-
-    // await paletteRequest(reqBody).then((res) => {
-    //     console.log(res);
-    //     qs_addPalette(res);
-    // });
-    // await paletteRequest(reqBody).then(palette => {
-    //     console.log(palette);
-    //     receivedPalette = palette;
-    // });
-
-    // console.log(receivedPalette);
-
-    // let receivedPalette = await paletteRequest(reqBody);
-    // qs_addPalette(await paletteRequest(reqBody));
-
-    // let receivedPalette = paletteRequest(reqBody);
-    // setTimeout(qs_addPalette(receivedPalette), 3000);
-
-    postColors(reqBody)
-    .then(response => {
-        qs_addPalette(response);
-    })
-    .catch(error => {
-        console.error(error);
-    });
-
-    return true;
-}
-
-function argumentTypeChecker(target = "empty"){
-    if (target == "empty") {
-        return "emp";
-    }else if (typeof target == "string") {
-        return "str";
-    }else if (typeof target == "object") {
-        if (typeof target[0] == "object") {
-            return "plt";
-        }else{
-            return "rgb";
-        }
-    }
-
-    return false;
-}
-
-function reqBodyComposer(ary){
-      let blackets = [];
-      for (let i = 0; i < 5-ary.length; i++) {
-        blackets.push("N");
-      }
-      
-      let result = ary.concat(blackets);
-
-    return result;
-}
-
-async function paletteRequest(clrs){
-    const url = "http://colormind.io/api/";
-    const data = {
-        model : "default",
-        input : clrs
-    };
-
-    const http = new XMLHttpRequest();
-
-    http.onreadystatechange = async function() {
-        if(http.readyState == 4 && http.status == 200) {
-            const palette = JSON.parse(http.responseText).result;
-            // qs_addPalette(palette);
-            // qsClr.push(palette);
-            console.log(palette);
-            return palette;
-        }
-    };
-
-    http.open("POST", url, true);
-    http.send(JSON.stringify(data));
-}
-
-function postColors(clrs) {
-    return fetch('http://colormind.io/api/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain'
-      },
-      body: JSON.stringify({model: "default", input: clrs})
-    })
-    .then(response => response.json())
-    .then(response => {
-      return response;
-    });
-  }
