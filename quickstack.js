@@ -1,4 +1,4 @@
-console.log("QuickStack v1.0 loaded!");
+console.log("QuickStack v1.1 loaded!");
 
 // --------------------
 //        GRID
