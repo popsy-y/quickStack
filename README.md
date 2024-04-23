@@ -6,22 +6,56 @@ QuickStack
 サイズや距離などを指定する場合、特に注意書きが無い限り単位にはpxが使用されます。
 
 ## 機能一覧
-- [Grid](#grid)
-    - [qs_gridFixed](#qs_gridfixed)
-    - [qs_gridResponsive](#qs_gridresponsive)
-    - [qs_gridCanvas](#qs_gridcanvas)
-    - [qs_gridRadial](#qs_gridradial)
-- [ColorPalettes](#colorpalettes)
-	- [qs_showPalettes](#qs_showpalettes)
-	- [qs_addPalette](#qs_addpalette)
-	- [qs_deletePalette](#qs_deletepalette)
-	- [qs_addColor](#qs_addcolor)
-	- [qs_deleteColor](#qs_deletecolor)
-	- [qs_pickPalette](#qs_pickpalette)
-	- [qs_rndPalette](#qs_rndpalette)
-	- [qs_rndPaletteColor](#qs_rndpalettecolor)
-	- [qs_rndColor](#qs_rndcolor)
-	- [qs_paletteGenerate(開発中)](#qs_palettegenerate)
+- [概要](#概要)
+	- [名称](#名称)
+	- [注意事項](#注意事項)
+- [機能一覧](#機能一覧)
+	- [Grid](#grid)
+		- [qs\_gridFixed](#qs_gridfixed)
+			- [概要](#概要-1)
+			- [構文](#構文)
+			- [引数](#引数)
+		- [qs\_gridResponsive](#qs_gridresponsive)
+			- [概要](#概要-2)
+			- [構文](#構文-1)
+			- [引数](#引数-1)
+		- [qs\_gridCanvas](#qs_gridcanvas)
+			- [概要](#概要-3)
+			- [構文](#構文-2)
+			- [引数](#引数-2)
+		- [qs\_gridRadial](#qs_gridradial)
+			- [概要](#概要-4)
+			- [構文](#構文-3)
+			- [引数](#引数-3)
+			- [備考](#備考)
+	- [ColorPalettes](#colorpalettes)
+		- [qs\_showPalettes](#qs_showpalettes)
+			- [概要](#概要-5)
+		- [qs\_addPalette](#qs_addpalette)
+			- [概要](#概要-6)
+			- [引数](#引数-4)
+		- [qs\_deletePalette](#qs_deletepalette)
+			- [概要](#概要-7)
+			- [引数](#引数-5)
+		- [qs\_addColor](#qs_addcolor)
+			- [概要](#概要-8)
+			- [引数](#引数-6)
+		- [qs\_deleteColor](#qs_deletecolor)
+			- [概要](#概要-9)
+			- [引数](#引数-7)
+		- [qs\_pickPalette](#qs_pickpalette)
+			- [概要](#概要-10)
+			- [引数](#引数-8)
+		- [qs\_rndPalette](#qs_rndpalette)
+			- [概要](#概要-11)
+		- [qs\_pickColor](#qs_pickcolor)
+			- [概要](#概要-12)
+			- [引数](#引数-9)
+		- [qs\_rndPaletteColor](#qs_rndpalettecolor)
+			- [概要](#概要-13)
+			- [引数](#引数-10)
+		- [qs\_rndColor](#qs_rndcolor)
+			- [概要](#概要-14)
 
 ### Grid
 グリッド系関数は、グリッド状に図形等を配置したい場合の座標計算を支援します。  
@@ -298,21 +332,3 @@ qs_rndPaletteColor(index)
 ```
 qs_rndColor()
 ```
-
-#### qs_paletteGenerate
-##### 概要
-**開発中です。非同期処理に関する知識不足のため、実装できていません。**  
-[Colormind](colormind.io)のAPIを利用し、5色のカラーパレットを生成します。  
-引数無しの場合は5色全てを、引数を渡した場合は引数に含まれる色を含んだカラーパレットを生成します。引数は単色と色を複数含む配列の両方を使用できます。  
-引数に`qs_pickPalette`等を使用し、既存のカラーパレットを利用して新たなカラーパレットを生成することもできます。  
-
-```
-qs_paletteGenerate()
-qs_paletteGenerate([[color], [color], [color]])
-qs_paletteGenerate(qs_pickPalette(0,1))
-```
-##### 引数
-<dl>
-<dt>color</dt>
-<dd>カラーパレットに含める色(ex: [120, 200, 255]や"#4cba99")</dd>
-</dl>

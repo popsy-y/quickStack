@@ -72,106 +72,108 @@ function qs_gridRadial(x, y, radius, elements){
 // --------------------
 //    COLOR PALETTES
 // --------------------
-let qsClr = [];
-
-function qs_showPalettes(){
-    return qsClr;
-}
-
-function qs_addPalette(palette){
-    let tmp = qsClr;
-    let tmp1;
-
-    console.log(palette);
-
-    for (let i = 0; i < palette.length; i++) {
-        console.log("test");
-        tmp1.push(color(palette[i]));
+{
+    // palette object
+    const qsClr = [];
+    
+    function qs_showPalettes(){
+        return qsClr;
     }
-
-    qsClr.length = 0;
-    qsClr = tmp.concat(tmp1);
-    console.log(qsClr);
-    return true;
-}
-
-function qs_deletePalette(index){
-    if (index > qsClr.length) {
-        console.error("[ERROR] qs_deletePalette: Invalid palette index");
-    }else{
-        qsClr.splice(index, 1);
+    
+    function qs_addPalette(palette){
+        let tmp = qsClr;
+        let tmp1;
+    
+        console.log(palette);
+    
+        for (let i = 0; i < palette.length; i++) {
+            console.log("test");
+            tmp1.push(color(palette[i]));
+        }
+    
+        qsClr.length = 0;
+        qsClr = tmp.concat(tmp1);
+        console.log(qsClr);
+        return true;
     }
-
-    return true;
-}
-
-function qs_addColor(index, clr){
-    if (index > qsClr.length) {
-        console.error("[ERROR] qs_addColor: Invalid palette index");
-    }else{
-        qsClr[index].push(color(clr));
+    
+    function qs_deletePalette(index){
+        if (index > qsClr.length) {
+            console.error("[ERROR] qs_deletePalette: Invalid palette index");
+        }else{
+            qsClr.splice(index, 1);
+        }
+    
+        return true;
     }
-
-    return true;
-}
-
-function qs_deleteColor(paletteIndex, colorIndex){
-    if (paletteIndex > qsClr.length) {
-        console.error("[ERROR] qs_deleteColor: Invalid palette index");
-    }else if(colorIndex > qsClr[paletteIndex].length){
-        console.error("[ERROR] qs_deleteColor: Invalid color index");
-    }else{
-        qsClr[paletteIndex].splice(colorIndex, 1);
+    
+    function qs_addColor(index, clr){
+        if (index > qsClr.length) {
+            console.error("[ERROR] qs_addColor: Invalid palette index");
+        }else{
+            qsClr[index].push(color(clr));
+        }
+    
+        return true;
     }
-
-    return true;
-}
-
-function qs_pickPalette(index){
-    if (index > qsClr.length) {
-        console.error("[ERROR] qs_pickPalette: Invalid palette index");
-    }else{
-        return qsClr[index];
+    
+    function qs_deleteColor(paletteIndex, colorIndex){
+        if (paletteIndex > qsClr.length) {
+            console.error("[ERROR] qs_deleteColor: Invalid palette index");
+        }else if(colorIndex > qsClr[paletteIndex].length){
+            console.error("[ERROR] qs_deleteColor: Invalid color index");
+        }else{
+            qsClr[paletteIndex].splice(colorIndex, 1);
+        }
+    
+        return true;
     }
-
-    return false;
-}
-
-function qs_rndPalette(){
-    return qsClr[Math.floor(Math.random()*qsClr.length)];
-}
-
-function qs_pickColor(paletteIndex, colorIndex){
-    if (paletteIndex > qsClr.length) {
-        console.error("[ERROR] qs_pickColor: Invalid palette index");
-    }else if(colorIndex > qsClr[paletteIndex].length){
-        console.error("[ERROR] qs_pickColor: Invalid color index");
-    }else{
+    
+    function qs_pickPalette(index){
+        if (index > qsClr.length) {
+            console.error("[ERROR] qs_pickPalette: Invalid palette index");
+        }else{
+            return qsClr[index];
+        }
+    
+        return false;
+    }
+    
+    function qs_rndPalette(){
+        return qsClr[Math.floor(Math.random()*qsClr.length)];
+    }
+    
+    function qs_pickColor(paletteIndex, colorIndex){
+        if (paletteIndex > qsClr.length) {
+            console.error("[ERROR] qs_pickColor: Invalid palette index");
+        }else if(colorIndex > qsClr[paletteIndex].length){
+            console.error("[ERROR] qs_pickColor: Invalid color index");
+        }else{
+            return qsClr[paletteIndex][colorIndex];
+        }
+    
+        return false;
+    }
+    
+    function qs_rndPaletteColor(index){
+        try{
+            if (index > qsClr.length) {
+                console.error("[ERROR] qs_rndPaletteColor: Invalid palette index");
+            }else{
+                console.log(qsClr);
+                return qs_pickColor(index, qs_pickPalette(index).length);
+            }
+        }catch{
+            return color("#FFFFFF");
+        }
+    
+        return false;
+    }
+    
+    function qs_rndColor(){
+        const paletteIndex = Math.floor(Math.random()*qsClr.length);
+        const colorIndex = Math.floor(Math.random()*qsClr[paletteIndex].length);
+    
         return qsClr[paletteIndex][colorIndex];
     }
-
-    return false;
-}
-
-function qs_rndPaletteColor(index){
-    try{
-        if (index > qsClr.length) {
-            console.error("[ERROR] qs_rndPaletteColor: Invalid palette index");
-        }else{
-            console.log(qsClr);
-            return qs_pickColor(index, qs_pickPalette(index).length);
-            // return qsClr[index][Math.floor(Math.random()*qs_pickPalette(index).length)];
-        }
-    }catch{
-        return color("#FFFFFF");
-    }
-
-    return false;
-}
-
-function qs_rndColor(){
-    const paletteIndex = Math.floor(Math.random()*qsClr.length);
-    const colorIndex = Math.floor(Math.random()*qsClr[paletteIndex].length);
-
-    return qsClr[paletteIndex][colorIndex];
 }
